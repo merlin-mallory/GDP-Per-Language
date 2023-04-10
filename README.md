@@ -241,14 +241,14 @@ Use this space to list resources you find helpful and would like to give credit 
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/merlin-mallory/GDP-Per-Language.svg?style=for-the-badge
 [contributors-url]: https://github.com/merlin-mallory/GDP-Per-Language/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[forks-shield]: https://img.shields.io/github/forks/merlin-mallory/GDP-Per-Language.svg?style=for-the-badge
+[forks-url]: https://github.com/merlin-mallory/GDP-Per-Language/network/members
+[stars-shield]: https://img.shields.io/github/stars/merlin-mallory/GDP-Per-Language.svg?style=for-the-badge
+[stars-url]: https://github.com/merlin-mallory/GDP-Per-Language/stargazers
+[issues-shield]: https://img.shields.io/github/issues/merlin-mallory/GDP-Per-Language.svg?style=for-the-badge
+[issues-url]: https://github.com/merlin-mallory/GDP-Per-Language/issues
+[license-shield]: https://img.shields.io/github/license/merlin-mallory/GDP-Per-Language.svg?style=for-the-badge
+[license-url]: https://github.com/merlin-mallory/GDP-Per-Language/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/othneildrew
 [product-screenshot]: images/screenshot.png
