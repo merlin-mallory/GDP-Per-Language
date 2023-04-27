@@ -18,7 +18,7 @@ class TestProgram(unittest.TestCase):
             ['Albania', np.nan],
             ['Algeria', 'Arabic'],
             ['Andorra', np.nan]
-        ], columns=['Country Name', 'Language'])
+        ], columns=['Country', 'Language'])
         print('=====')
         print('Testing import of country-to-lang dictionary...')
         print("Expected DF:")
@@ -98,7 +98,29 @@ class TestProgram(unittest.TestCase):
 
     def test4_import_imf_ppp(self):
         obj = Data()
-        df = obj.import_imf_ppp()
+        df = obj.create_imf_ppp_mod()
+        df = df[['Country', 1980]]
+        df = df.head()
+
+        expected_df = pd.DataFrame({
+            'Country': [np.nan, 'Afghanistan', 'Albania', 'Algeria', 'Andorra'],
+            1980: [np.nan, np.nan, 0.042886468593090005, 0.6683259264378286, np.nan]
+        }, columns=['Country', 1980])
+
+        print('=====')
+        print('Testing creation of language_to_country dictionary...')
+        print("Expected DF:")
+        print(expected_df)
+        print('======')
+        print("Actual DF:")
+        print(df)
+        print('=====')
+
+        assert_frame_equal(df, expected_df)
+
+    def test5_group_imf_gdp_ppp_by_language(self):
+        obj = Data()
+        df = obj.group_imf_gdp_ppp_by_language()
 
         expected_df = None
 
@@ -111,11 +133,6 @@ class TestProgram(unittest.TestCase):
         print(df)
         print('=====')
 
-        # assert_frame_equal(df, expected_df)
-
-    # def test5(self):
-    #
-    #
     # def test6(self):
     #
     #
