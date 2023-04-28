@@ -2,7 +2,7 @@ import unittest
 from DataCleaner import *
 import pandas as pd
 import numpy as np
-from pandas.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal, assert_series_equal
 import xlwt
 
 class TestProgram(unittest.TestCase):
@@ -121,21 +121,46 @@ class TestProgram(unittest.TestCase):
     def test5_group_imf_gdp_ppp_by_language(self):
         obj = Data()
         df = obj.group_imf_gdp_ppp_by_language()
+        df = df.head()
+        df = df[1980]
 
-        expected_df = None
+        data = {
+            'Language': ['Arabic', 'Bengali', 'Chinese', 'Dutch', 'English'],
+            1980: [6.637759, 0.375493, 2.981812, 2.035182, 29.327724]
+        }
+        expected_df = pd.DataFrame(data)
+        expected_df.set_index('Language', inplace=True)
+        expected_df = expected_df.squeeze()
 
         print('=====')
-        print('Testing creation of language_to_country dictionary...')
+        print('Testing grouping of language data int...')
         print("Expected DF:")
-        print(expected_df)
+        print(expected_df, "Heres expected series type:", type(expected_df))
         print('======')
-        print("Actual DF:")
-        print(df)
+        print("Actual df:")
+        print(df, "Heres actual series type:", type(df))
         print('=====')
 
-    # def test6(self):
-    #
-    #
+        assert_series_equal(df, expected_df)
+
+    def test6_generate_annual_summary_stats(self):
+        obj = Data()
+        result = obj.generate_annual_summary_stats()
+        series = obj.gdp_dict[1980]['IMF']['gdp_ppp']
+        series.head()
+
+        expected_series = None
+
+        print('=====')
+        print('Testing generation of summary stats...')
+        print("Actual df:")
+        print(series, "Heres actual series type:", type(series))
+        print('=====')
+        print("Expected DF:")
+        print(expected_series, "Heres expected series type:", type(expected_series))
+        print('======')
+
+
     # def test7(self):
     #
     #

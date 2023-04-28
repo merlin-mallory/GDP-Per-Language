@@ -19,7 +19,7 @@ class Data:
         # Dataframe that contains % of world GDP per language, for all years of data
         self.imf_ppp_full = self.group_imf_gdp_ppp_by_language()
 
-        # Dictionary that will hold per language summary statistics, categorized by year/data source/data measure
+        # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
         self.gdp_dict = {}
         for i in range(1980, 2029):
             self.gdp_dict[i] = {
@@ -112,20 +112,35 @@ class Data:
         # Now lets group the data by language.
         grouped_by_language = df.groupby('Language')
         sum_by_language = grouped_by_language.sum()
-        df = sum_by_language.reset_index()
-        return df
+        sum_by_language.reset_index()
+
+        # Drop the country column
+        sum_by_language = sum_by_language.drop('Country', axis='columns')
+
+        # Write the dataframe to the appropriate "full" file
+        file_name = 'DataSource/full/imf_ppp_full.xlsx'
+        with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+            sum_by_language.to_excel(writer, index=True, sheet_name='Sheet1')
+
+        return sum_by_language
 
     def generate_annual_summary_stats(self):
         # Grab the appropriate full data
         df = self.imf_ppp_full
 
-
         # Locate the starting and ending point of the loop
-        starting_year = df.columns[1]
+        starting_year = df.columns[0]
         ending_year = df.columns[-1]
 
         # Loop through every year of data, creating annual reports, and save them in the gdp_dict.
         for i in range(starting_year, ending_year+1):
-            temp_df = df[['Language', i]]
+            if i in df.columns:
+                temp_df = df[i].copy()
+                temp_df.columns = ['Language', '% of world GDP PPP']
+                self.gdp_dict[i]['IMF']['gdp_ppp'] = temp_df
+
+                file_name = 'DataSource/final/imf_ppp/' + str(i) + '.xlsx'
+                with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+                    temp_df.to_excel(writer, index=True, sheet_name='Sheet1')
 
 
