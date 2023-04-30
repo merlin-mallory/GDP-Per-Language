@@ -11,17 +11,20 @@ class Data:
         self.export_lang_to_country_to_xls()
 
         # Dataframes containing all country, all year, modified data
+        self.imf_ppp_mod = self.create_mod('imf', 'ppp')
+        self.imf_nom_mod = self.create_mod('imf', 'nom')
         self.wb_ppp_mod = None
         self.wb_nom_mod = None
-        self.imf_ppp_mod = self.create_imf_ppp_mod()
-        self.imf_nom_mod = None
 
         # Dataframe that contains % of world GDP per language, for all years of data
-        self.imf_ppp_full = self.group_imf_gdp_ppp_by_language()
+        self.imf_ppp_full = self.group_by_language('imf', 'ppp')
+        self.imf_nom_full = self.group_by_language('imf', 'nom')
+        self.wb_ppp_full = None
+        self.wb_nom_full = None
 
         # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
         self.gdp_dict = {}
-        for i in range(1980, 2029):
+        for i in range(1960, 2029):
             self.gdp_dict[i] = {
                 "World Bank": {
                     "gdp_ppp": None,
@@ -32,6 +35,9 @@ class Data:
                     "gdp_nom": None
                 }
             }
+
+        self.generate_annual_summary_stats('imf', 'ppp')
+        self.generate_annual_summary_stats('imf', 'nom')
 
     def import_country_to_lang(self):
         result = pd.read_excel('DataSource/Country_To_Lang.xls', sheet_name='Sheet1', engine='xlrd')
@@ -50,10 +56,19 @@ class Data:
             df.to_excel(writer, index=False, sheet_name='Sheet1')
         return
 
-    def create_imf_ppp_mod(self):
+    def create_mod(self, data_source, data_measure):
         # Import the file
-        sheet_name = 'PPPGDP'
-        df = pd.read_excel('DataSource/raw/imf_ppp.xls', sheet_name='PPPGDP', engine='xlrd')
+        if data_source == 'imf' and data_measure == 'ppp':
+            my_sheet_name = 'PPPGDP'
+        elif data_source == 'imf' and data_measure == 'nom':
+            my_sheet_name = 'NGDPD'
+        elif data_source == 'wb' and data_measure == 'ppp':
+            my_sheet_name = 'Data'
+        else: # datasource == 'wb' and data_measure == 'nom
+            my_sheet_name = 'Data'
+
+        path = 'DataSource/raw/' + data_source + '_' + data_measure + '.xls'
+        df = pd.read_excel(path, sheet_name=my_sheet_name, engine='xlrd')
 
         # Rename the first column as "Country"
         target_column_index = 0
@@ -92,15 +107,23 @@ class Data:
         df = df.drop(row_to_remove)
 
         # Write the data to the mod file
-        file_name = 'DataSource/mod/imf_ppp_mod.xlsx'
+        file_name = 'DataSource/mod/' + data_source + '_' + data_measure + '_' + 'mod' + '.xlsx'
         with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name='Sheet1')
 
         return df
 
-    def group_imf_gdp_ppp_by_language(self):
+    def group_by_language(self, data_source, data_measure):
         # Import the relevant mod file and dictionary
-        df1 = self.imf_ppp_mod
+        if data_source == 'imf' and data_measure == 'ppp':
+            df1 = self.imf_ppp_mod
+        elif data_source == 'imf' and data_measure == 'nom':
+            df1 = self.imf_nom_mod
+        elif data_source == 'wb' and data_measure == 'ppp':
+            df1 = self.wb_ppp_mod
+        else: # data_source == 'wb and data_measure == 'nom'
+            df1 = self.wb_nom_mod
+
         df2 = self.country_to_lang
 
         # Merge the Country to Language info with the mod info
@@ -118,15 +141,22 @@ class Data:
         sum_by_language = sum_by_language.drop('Country', axis='columns')
 
         # Write the dataframe to the appropriate "full" file
-        file_name = 'DataSource/full/imf_ppp_full.xlsx'
+        file_name = 'DataSource/full/' + data_source + '_' + data_measure + '_' + 'full' + '.xlsx'
         with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
             sum_by_language.to_excel(writer, index=True, sheet_name='Sheet1')
 
         return sum_by_language
 
-    def generate_annual_summary_stats(self):
+    def generate_annual_summary_stats(self, data_source, data_measure):
         # Grab the appropriate full data
-        df = self.imf_ppp_full
+        if data_source == 'imf' and data_measure == 'ppp':
+            df = self.imf_ppp_full
+        elif data_source == 'imf' and data_measure == 'nom':
+            df = self.imf_nom_full
+        elif data_source == 'wb' and data_measure == 'ppp':
+            df = self.wb_ppp_full
+        else: # data_source == 'wb' and data_measure == 'ppp'
+            df = self.wb_nom_full
 
         # Locate the starting and ending point of the loop
         starting_year = df.columns[0]
@@ -135,12 +165,17 @@ class Data:
         # Loop through every year of data, creating annual reports, and save them in the gdp_dict.
         for i in range(starting_year, ending_year+1):
             if i in df.columns:
+                # Grab the appropriate [year][data_source][data_measure] dataframe
                 temp_df = df[i].copy()
                 temp_df.columns = ['Language', '% of world GDP PPP']
-                self.gdp_dict[i]['IMF']['gdp_ppp'] = temp_df
+                # Sort this slice's data according to % of world GDP
+                sorted_df = temp_df.sort_values(ascending=False)
+                # Cut down to top 20
+                culled_df = sorted_df.iloc[:20]
+                self.gdp_dict[i]['IMF']['gdp_ppp'] = culled_df
 
-                file_name = 'DataSource/final/imf_ppp/' + str(i) + '.xlsx'
+                file_name = 'DataSource/final/' + data_source + '_' + data_measure + '/' + str(i) + '.xlsx'
                 with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
-                    temp_df.to_excel(writer, index=True, sheet_name='Sheet1')
+                    culled_df.to_excel(writer, index=True, sheet_name='Sheet1')
 
 

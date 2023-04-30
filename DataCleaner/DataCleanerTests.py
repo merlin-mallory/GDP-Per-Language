@@ -98,7 +98,7 @@ class TestProgram(unittest.TestCase):
 
     def test4_import_imf_ppp(self):
         obj = Data()
-        df = obj.create_imf_ppp_mod()
+        df = obj.create_mod('imf', 'ppp')
         df = df[['Country', 1980]]
         df = df.head()
 
@@ -120,7 +120,7 @@ class TestProgram(unittest.TestCase):
 
     def test5_group_imf_gdp_ppp_by_language(self):
         obj = Data()
-        df = obj.group_imf_gdp_ppp_by_language()
+        df = obj.group_by_language('imf', 'ppp')
         df = df.head()
         df = df[1980]
 
@@ -145,20 +145,29 @@ class TestProgram(unittest.TestCase):
 
     def test6_generate_annual_summary_stats(self):
         obj = Data()
-        result = obj.generate_annual_summary_stats()
+        result = obj.generate_annual_summary_stats('imf', 'ppp')
         series = obj.gdp_dict[1980]['IMF']['gdp_ppp']
-        series.head()
+        series = series.head()
+        df = series.to_frame()
+        df = df.reset_index()
 
-        expected_series = None
+        data = {
+            'Language': ['English', 'Spanish', 'Japanese', 'German', 'Arabic'],
+            1980: [29.327724, 9.798936, 7.953924, 7.849050, 6.637759]
+        }
+        expected_df = pd.DataFrame(data)
+
 
         print('=====')
         print('Testing generation of summary stats...')
         print("Actual df:")
-        print(series, "Heres actual series type:", type(series))
+        print(df, "Heres actual df type:", type(df))
         print('=====')
         print("Expected DF:")
-        print(expected_series, "Heres expected series type:", type(expected_series))
+        print(expected_df, "Heres expected df type:", type(expected_df))
         print('======')
+
+        assert_frame_equal(df, expected_df)
 
 
     # def test7(self):
