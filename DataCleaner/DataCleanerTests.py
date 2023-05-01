@@ -146,7 +146,7 @@ class TestProgram(unittest.TestCase):
     def test6_generate_annual_summary_stats(self):
         obj = Data()
         result = obj.generate_annual_summary_stats('imf', 'ppp')
-        series = obj.gdp_dict[1980]['IMF']['gdp_ppp']
+        series = obj.gdp_dict[1980]['imf']['ppp']
         series = series.head()
         df = series.to_frame()
         df = df.reset_index()

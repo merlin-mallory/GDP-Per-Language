@@ -26,13 +26,13 @@ class Data:
         self.gdp_dict = {}
         for i in range(1960, 2029):
             self.gdp_dict[i] = {
-                "World Bank": {
-                    "gdp_ppp": None,
-                    "gdp_nom": None
+                "wb": {
+                    "ppp": None,
+                    "nom": None
                 },
-                "IMF": {
-                    "gdp_ppp": None,
-                    "gdp_nom": None
+                "imf": {
+                    "ppp": None,
+                    "nom": None
                 }
             }
 
@@ -172,7 +172,7 @@ class Data:
                 sorted_df = temp_df.sort_values(ascending=False)
                 # Cut down to top 20
                 culled_df = sorted_df.iloc[:20]
-                self.gdp_dict[i]['IMF']['gdp_ppp'] = culled_df
+                self.gdp_dict[i][data_source][data_measure] = culled_df
 
                 file_name = 'DataSource/final/' + data_source + '_' + data_measure + '/' + str(i) + '.xlsx'
                 with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
