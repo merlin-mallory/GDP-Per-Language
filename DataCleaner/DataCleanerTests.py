@@ -13,7 +13,6 @@ class TestProgram(unittest.TestCase):
         df = obj.import_country_to_lang()
         df = df.head()
         expected_df = pd.DataFrame([
-            [np.nan, np.nan],
             ['Afghanistan', 'Persian'],
             ['Albania', np.nan],
             ['Algeria', 'Arabic'],
@@ -35,17 +34,15 @@ class TestProgram(unittest.TestCase):
         df = obj.create_lang_to_country()
         df = df.head()
         expected_df = pd.DataFrame({
-            'Language': ['Arabic','Bengali','Chinese','Dutch','English'],
+            'Language': ['Arabic','Bengali','Chinese','Danish','Dutch'],
             'List of Countries In Language Group':
                 [
                 ['Algeria', 'Bahrain', 'Egypt', 'Iraq', 'Jordan', 'Kuwait', 'Lebanon', 'Libya', 'Morocco', 'Oman',
-                 'Qatar', 'Saudi Arabia', 'Sudan', 'Syria', 'Tunisia'],
+                 'Qatar', 'Saudi Arabia', 'Sudan', 'Syria', 'Tunisia', 'United Arab Emirates'],
                 ['Bangladesh'],
                 ['China, People\'s Republic of', 'Hong Kong SAR', 'Macao SAR', 'Taiwan Province of China'],
-                ['Belgium', 'Netherlands', 'Suriname'],
-                ['Antigua and Barbuda', 'Australia', 'Bahamas, The', 'Barbados', 'Belize', 'Canada',
-                'Grenada', 'Guyana', 'Ireland', 'Jamaica', 'New Zealand', 'Singapore', 'Trinidad and Tobago',
-                'United Kingdom', 'United States']
+                ['Denmark'],
+                ['Belgium', 'Netherlands', 'Suriname']
                 ]
         }, columns=['Language', 'List of Countries In Language Group'])
 
@@ -125,8 +122,8 @@ class TestProgram(unittest.TestCase):
         df = df[1980]
 
         data = {
-            'Language': ['Arabic', 'Bengali', 'Chinese', 'Dutch', 'English'],
-            1980: [6.637759, 0.375493, 2.981812, 2.035182, 29.327724]
+            'Language': ['Arabic', 'Bengali', 'Chinese', 'Danish', 'Dutch'],
+            1980: [7.307723, 0.375493, 2.981812, 0.452762, 2.035182]
         }
         expected_df = pd.DataFrame(data)
         expected_df.set_index('Language', inplace=True)
@@ -153,7 +150,7 @@ class TestProgram(unittest.TestCase):
 
         data = {
             'Language': ['English', 'Spanish', 'Japanese', 'German', 'Arabic'],
-            1980: [29.327724, 9.798936, 7.953924, 7.849050, 6.637759]
+            1980: [29.327724, 9.798936, 7.953924, 7.849050, 7.307723]
         }
         expected_df = pd.DataFrame(data)
 
