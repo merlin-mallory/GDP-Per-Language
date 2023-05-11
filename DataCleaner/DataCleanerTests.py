@@ -13,11 +13,12 @@ class TestProgram(unittest.TestCase):
         df = obj.import_country_to_lang()
         df = df.head()
         expected_df = pd.DataFrame([
-            ['Afghanistan', 'Persian'],
-            ['Albania', np.nan],
-            ['Algeria', 'Arabic'],
-            ['Andorra', np.nan]
-        ], columns=['Country', 'Language'])
+            ['Afghanistan', 'Afghanistan','Afghanistan', 'AFG', 'Persian'],
+            ['Albania', 'Albania', 'Albania', 'ALB', np.nan],
+            ['Algeria', 'Algeria', np.nan, np.nan, 'Arabic'],
+            ['Andorra', 'Andorra', 'Andorra', 'AND', np.nan],
+            ['Angola', 'Angola', 'Angola', 'AGO', 'Portuguese']
+        ], columns=['PowerBI Name', 'IMF Name', 'WB Name', 'WB Code', 'Language'])
         print('=====')
         print('Testing import of country-to-lang dictionary...')
         print("Expected DF:")
@@ -40,7 +41,7 @@ class TestProgram(unittest.TestCase):
                 ['Algeria', 'Bahrain', 'Egypt', 'Iraq', 'Jordan', 'Kuwait', 'Lebanon', 'Libya', 'Morocco', 'Oman',
                  'Qatar', 'Saudi Arabia', 'Sudan', 'Syria', 'Tunisia', 'United Arab Emirates'],
                 ['Bangladesh'],
-                ['China, People\'s Republic of', 'Hong Kong SAR', 'Macao SAR', 'Taiwan Province of China'],
+                ['China', 'Hong Kong', 'Macao', 'Taiwan'],
                 ['Denmark'],
                 ['Belgium', 'Netherlands', 'Suriname']
                 ]
@@ -167,9 +168,28 @@ class TestProgram(unittest.TestCase):
         assert_frame_equal(df, expected_df)
 
 
-    # def test7(self):
-    #
-    #
+    def test7_wb_create_mod(self):
+        obj = Data()
+        df = obj.create_mod('wb', 'ppp')
+        df = df[['Country', 1980]]
+        df = df.head()
+
+        expected_df = pd.DataFrame({
+            'Country': [np.nan, 'Afghanistan', 'Albania', 'Algeria', 'Andorra'],
+            1980: [np.nan, np.nan, 0.042886468593090005, 0.6683259264378286, np.nan]
+            }, columns=['Country', 1980])
+
+        print('=====')
+        print('Testing creation of language_to_country dictionary...')
+        print("Expected DF:")
+        print(expected_df)
+        print('======')
+        print("Actual DF:")
+        print(df)
+        print('=====')
+
+        assert_frame_equal(df, expected_df)
+
     # def test8(self):
     #
     #
