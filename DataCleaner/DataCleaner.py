@@ -10,34 +10,36 @@ class Data:
         self.lang_to_country_imf = self.create_lang_to_country()
         self.export_lang_to_country_to_xls()
         #
-        # # Dataframes containing all country, all year, modified data
-        # self.imf_ppp_mod = self.create_mod('imf', 'ppp')
-        # self.imf_nom_mod = self.create_mod('imf', 'nom')
+        # Dataframes containing all country, all year, modified data
+        self.imf_ppp_mod = self.create_mod('imf', 'ppp')
+        self.imf_nom_mod = self.create_mod('imf', 'nom')
         self.wb_ppp_mod = self.create_mod('wb', 'ppp')
-        # self.wb_nom_mod = None
-        #
-        # # Dataframe that contains % of world GDP per language, for all years of data
-        # self.imf_ppp_full = self.group_by_language('imf', 'ppp')
-        # self.imf_nom_full = self.group_by_language('imf', 'nom')
-        # self.wb_ppp_full = None
-        # self.wb_nom_full = None
-        #
-        # # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
-        # self.gdp_dict = {}
-        # for i in range(1960, 2029):
-        #     self.gdp_dict[i] = {
-        #         "wb": {
-        #             "ppp": None,
-        #             "nom": None
-        #         },
-        #         "imf": {
-        #             "ppp": None,
-        #             "nom": None
-        #         }
-        #     }
-        #
-        # self.generate_annual_summary_stats('imf', 'ppp')
-        # self.generate_annual_summary_stats('imf', 'nom')
+        self.wb_nom_mod = self.create_mod('wb', 'nom')
+
+        # Dataframe that contains % of world GDP per language, for all years of data
+        self.imf_ppp_full = self.group_by_language('imf', 'ppp')
+        self.imf_nom_full = self.group_by_language('imf', 'nom')
+        self.wb_ppp_full = self.group_by_language('wb', 'ppp')
+        self.wb_nom_full = self.group_by_language('wb', 'nom')
+
+        # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
+        self.gdp_dict = {}
+        for i in range(1960, 2029):
+            self.gdp_dict[i] = {
+                "wb": {
+                    "ppp": None,
+                    "nom": None
+                },
+                "imf": {
+                    "ppp": None,
+                    "nom": None
+                }
+            }
+
+        self.generate_annual_summary_stats('imf', 'ppp')
+        self.generate_annual_summary_stats('imf', 'nom')
+        self.generate_annual_summary_stats('wb', 'ppp')
+        self.generate_annual_summary_stats('wb', 'nom')
 
     def import_country_to_lang(self):
         result = pd.read_excel('DataSource/CountryNameLanguageMap.xls', sheet_name='Sheet1', engine='xlrd')
@@ -77,7 +79,7 @@ class Data:
         # print(df.head())
         # Initialize the top rows
         if data_source == 'wb':
-            # Drop the first 3 rows of the header, should be 'Data Source', 'Last Updated Date', and 'Header'
+            # Drop the first 3 rows of the header, should be 'Data Source', 'Last Updated Date', and a blank line
             df = df.iloc[2:]
             # Next, reassign the column names
             df.reset_index(drop=True, inplace=True)
@@ -88,10 +90,35 @@ class Data:
             df.rename(columns={'Country Name': 'Country'}, inplace=True)
             df.columns = df.columns.astype(str)
             df.columns = df.columns.str.replace(r'\.0$', '', regex=True)
-        # print('DF after first 3 drop:')
-        # print(df.head())
 
-        # Continue here...
+            # Delete indicator rows
+            deleting_df = pd.read_excel('DataSource/CountryNameFiles\WB_delete_codes.xlsx', sheet_name='Sheet1',
+                                        engine='openpyxl')
+
+            # print("df before delete:")
+            # print(df)
+
+            # Find the rows where either 'Country' or 'Country Code" in df is in deleting_df
+            mask_country = df['Country'].isin(deleting_df['Country Name'])
+            mask_code = df['Country Code'].isin(deleting_df['Country Code'])
+
+            # Use the mask to filter the rows in df
+            df = df[~(mask_country | mask_code)]
+
+            # Reindex after the drop
+            df = df.reset_index(drop=True)
+
+            # Delete the 'Indicator Name' and 'Indicator Code' columns
+            df = df.drop(['Indicator Name', 'Indicator Code'], axis=1)
+
+            # print("here's the df after delete:")
+            # print(df)
+
+        # Rename the first column as "Country"
+        target_column_index = 0
+        old_column_name = df.columns[target_column_index]
+        new_column_name = 'Country'
+        df = df.rename(columns={old_column_name: new_column_name})
 
         # Convert names to PowerBI Names
         if data_source == 'imf':
@@ -143,19 +170,13 @@ class Data:
 
         df['Country'] = df['Country'].replace(names_to_change)
 
-        # Rename the first column as "Country"
-        target_column_index = 0
-        old_column_name = df.columns[target_column_index]
-        new_column_name = 'Country'
-        df = df.rename(columns={old_column_name: new_column_name})
-
         # Grab the world GDP row
         world_data = df[df["Country"] == "World"]
 
         # Locate Zimbabwe's index, we want to delete all the rows after Zimbabwe
         mask = df["Country"] == "Zimbabwe"
         index_of_zimbabwe = df.loc[mask].index
-        print("index of z:", index_of_zimbabwe)
+        # print("index of z:", index_of_zimbabwe)
 
         # Delete all of the rows after Zimbabwe's index
         df = df.iloc[:index_of_zimbabwe[0]+1]
@@ -168,7 +189,12 @@ class Data:
 
         def calculate_percentage(row):
             world_data = df[df["Country"] == "World"]
-            for year in df.columns[1:]:
+            if data_source == 'imf':
+                year_start = 1
+            else:   # data_source == 'wb'
+                year_start = 2
+
+            for year in df.columns[year_start:]:
                 row[year] = (row[year] / world_data[year].values[0]) * 100
             return row
 
@@ -178,6 +204,9 @@ class Data:
         # Remove the World Data at the bottom of the frame
         row_to_remove = df[df['Country'] == 'World'].index
         df = df.drop(row_to_remove)
+
+        # Finalize the reset
+        df = df.reset_index(drop=True)
 
         # Write the data to the mod file
         file_name = 'DataSource/mod/' + data_source + '_' + data_measure + '_' + 'mod' + '.xlsx'
@@ -199,8 +228,14 @@ class Data:
 
         df2 = self.country_to_lang
 
+        print("Here's the relevant mod df:")
+        print(df1)
+        print("here's the country to lang df:")
+        print(df2)
+
         # Merge the Country to Language info with the mod info
-        df = pd.merge(df1, df2, on='Country', how='outer')
+        # df = pd.merge(df1, df2, on='Country', how='outer')
+        df = df1.merge(df2, left_on='Country', right_on='PowerBI Name', how='inner')
 
         # This will result in many rows of NaN, so lets drop them.
         cleaned_df = df.dropna(subset=['Country'])
@@ -210,8 +245,13 @@ class Data:
         sum_by_language = grouped_by_language.sum()
         sum_by_language.reset_index()
 
-        # Drop the country column
-        sum_by_language = sum_by_language.drop('Country', axis='columns')
+        # Drop the country
+        sum_by_language = sum_by_language.drop(['Country', 'PowerBI Name', 'IMF Name', 'WB Name', 'WB Code'],
+                                               axis='columns')
+        if data_source == 'wb':
+            sum_by_language = sum_by_language.drop(['Country Code'],
+                                               axis='columns')
+            sum_by_language.columns = [int(col) if i > 0 else col for i, col in enumerate(sum_by_language.columns)]
 
         # Write the dataframe to the appropriate "full" file
         file_name = 'DataSource/full/' + data_source + '_' + data_measure + '_' + 'full' + '.xlsx'
@@ -232,8 +272,8 @@ class Data:
             df = self.wb_nom_full
 
         # Locate the starting and ending point of the loop
-        starting_year = df.columns[0]
-        ending_year = df.columns[-3]
+        starting_year = int(df.columns[0])
+        ending_year = int(df.columns[-1])
 
         # Loop through every year of data, creating annual reports, and save them in the gdp_dict.
         for i in range(starting_year, ending_year+1):
