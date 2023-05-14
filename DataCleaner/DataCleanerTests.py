@@ -267,5 +267,55 @@ class TestProgram(unittest.TestCase):
 
         assert_frame_equal(df, expected_df)
 
+    # def test11_create_mega(self):
+    #     obj = Data()
+    #     df = obj.create_mega()
+    #     df = df[['Country', 2021]]
+    #     df = df.head()
+    #     df = df.reset_index(drop=True)
+    #     # df.columns = ['Country', 2020]
+    #
+    #     expected_df = pd.DataFrame({
+    #         'Country': ['Aruba', 'Afghanistan', 'Angola', 'Albania', 'Andorra'],
+    #         '2020': [0.0030664371130266163, 0.023665776669792787, 0.06299504371216032, 0.017777863637857775,
+    #                  0.0033965539229652317]
+    #         }, columns=['Country', 2021, 'Data Source', 'Data Measure'])
+    #
+    #     print('=====')
+    #     print('Testing creation of mega file....')
+    #     print("Expected DF:")
+    #     print(expected_df)
+    #     print('======')
+    #     print("Actual DF:")
+    #     print(df)
+    #     print('=====')
+    #
+    #     assert_frame_equal(df, expected_df)
+
+    def test12_create_mega2(self):
+        obj = Data()
+        df = obj.create_mega2()
+        df = df[['Country', 2021]]
+        df = df.head()
+        df = df.reset_index(drop=True)
+        # df.columns = ['Country', 2020]
+
+        expected_df = pd.DataFrame({
+            'Country': ['Aruba', 'Afghanistan', 'Angola', 'Albania', 'Andorra'],
+            '2020': [0.0030664371130266163, 0.023665776669792787, 0.06299504371216032, 0.017777863637857775,
+                     0.0033965539229652317]
+            }, columns=['Country', 2021, 'Data Source', 'Data Measure'])
+
+        print('=====')
+        print('Testing creation of mega file....')
+        print("Expected DF:")
+        print(expected_df)
+        print('======')
+        print("Actual DF:")
+        print(df)
+        print('=====')
+
+        assert_frame_equal(df, expected_df)
+
 if __name__ == '__main__':
     unittest.main()

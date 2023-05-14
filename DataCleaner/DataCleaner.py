@@ -22,24 +22,27 @@ class Data:
         self.wb_ppp_full = self.group_by_language('wb', 'ppp')
         self.wb_nom_full = self.group_by_language('wb', 'nom')
 
-        # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
-        self.gdp_dict = {}
-        for i in range(1960, 2029):
-            self.gdp_dict[i] = {
-                "wb": {
-                    "ppp": None,
-                    "nom": None
-                },
-                "imf": {
-                    "ppp": None,
-                    "nom": None
-                }
-            }
+        # Generate mega file, which contains all IMF, WB, PPP, and Nominal data
+        self.mega = self.create_mega()
 
-        self.generate_annual_summary_stats('imf', 'ppp')
-        self.generate_annual_summary_stats('imf', 'nom')
-        self.generate_annual_summary_stats('wb', 'ppp')
-        self.generate_annual_summary_stats('wb', 'nom')
+        # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
+        # self.gdp_dict = {}
+        # for i in range(1960, 2029):
+        #     self.gdp_dict[i] = {
+        #         "wb": {
+        #             "ppp": None,
+        #             "nom": None
+        #         },
+        #         "imf": {
+        #             "ppp": None,
+        #             "nom": None
+        #         }
+        #     }
+        #
+        # self.generate_annual_summary_stats('imf', 'ppp')
+        # self.generate_annual_summary_stats('imf', 'nom')
+        # self.generate_annual_summary_stats('wb', 'ppp')
+        # self.generate_annual_summary_stats('wb', 'nom')
 
     def import_country_to_lang(self):
         result = pd.read_excel('DataSource/CountryNameLanguageMap.xls', sheet_name='Sheet1', engine='xlrd')
@@ -228,10 +231,10 @@ class Data:
 
         df2 = self.country_to_lang
 
-        print("Here's the relevant mod df:")
-        print(df1)
-        print("here's the country to lang df:")
-        print(df2)
+        # print("Here's the relevant mod df:")
+        # print(df1)
+        # print("here's the country to lang df:")
+        # print(df2)
 
         # Merge the Country to Language info with the mod info
         # df = pd.merge(df1, df2, on='Country', how='outer')
@@ -291,4 +294,153 @@ class Data:
                 with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
                     culled_df.to_excel(writer, index=True, sheet_name='Sheet1')
 
+    def create_mega(self):
+        # Grab the 4 mod files
+        df1 = self.imf_nom_mod
+        df2 = self.imf_ppp_mod
+        df3 = self.wb_nom_mod
+        df4 = self.wb_ppp_mod
+        df5 = self.country_to_lang
 
+        df1['Country Code'] = ''
+        df2['Country Code'] = ''
+
+        df1['Data Source'] = 'IMF'
+        df2['Data Source'] = 'IMF'
+        df3['Data Source'] = 'World Bank'
+        df4['Data Source'] = 'World Bank'
+
+        df1['Data Measure'] = 'Nominal'
+        df2['Data Measure'] = 'PPP'
+        df3['Data Measure'] = 'Nominal'
+        df4['Data Measure'] = 'PPP'
+
+        # Melt the dataframes to long format
+        df1 = df1.melt(id_vars=['Country', 'Data Source', 'Data Measure'], var_name='Year', value_name='GDP')
+        # print("Here's df1's shape after melt:")
+        # print(df1.shape)
+        df2 = df2.melt(id_vars=['Country', 'Data Source', 'Data Measure'], var_name='Year', value_name='GDP')
+        # print("Here's df2's shape after melt:")
+        # print(df2.shape)
+        df3 = df3.melt(id_vars=['Country', 'Country Code', 'Data Source', 'Data Measure'], var_name='Year',
+                       value_name='GDP')
+        df4 = df4.melt(id_vars=['Country', 'Country Code', 'Data Source', 'Data Measure'], var_name='Year',
+                       value_name='GDP')
+
+        # Concatenate the dataframes
+        df = pd.concat([df1, df2, df3, df4])
+
+        # print("Here's the value counts after concat:")
+        # print(df['Data Source'].value_counts())
+
+        # Aggregate over the groupby to resolve conflicts
+        df = df.groupby(['Country', 'Country Code', 'Data Source', 'Data Measure', 'Year'], as_index=False).agg(
+            {'GDP': 'first'})
+
+        # print("Here's the value counts after groupby:")
+        # print(df['Data Source'].value_counts)
+
+        # Convert 'Year' back to integer data type
+        df['Year'] = df['Year'].astype(int)
+
+        # print("Here's the original df columns:")
+        # print(df.columns)
+        # print("Here's the Country_To_Lang columns:")
+        # print(df5.columns)
+
+        # Add the language data to the mega file
+        df = pd.merge(df, df5[['PowerBI Name', 'Language']], left_on='Country', right_on='PowerBI Name', how='left')
+        df = df.drop('PowerBI Name', axis=1)
+
+        file_name = 'DataSource/' + 'mega' + '.xlsx'
+        with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+            df.to_excel(writer, index=True, sheet_name='Sheet1')
+
+        return df
+
+    def create_mega2(self):
+        # Grab the 4 mod files
+        df1 = self.imf_nom_mod
+        df2 = self.imf_ppp_mod
+        df3 = self.wb_nom_mod
+        df4 = self.wb_ppp_mod
+        df5 = self.country_to_lang
+
+        df1['Country Code'] = ''
+        df2['Country Code'] = ''
+
+        df1['Data Source'] = 'IMF'
+        df2['Data Source'] = 'IMF'
+        df3['Data Source'] = 'World Bank'
+        df4['Data Source'] = 'World Bank'
+
+        df1['Data Measure'] = 'Nominal'
+        df2['Data Measure'] = 'PPP'
+        df3['Data Measure'] = 'Nominal'
+        df4['Data Measure'] = 'PPP'
+
+
+        # print("Here's df1 columns:")
+        # print(df1.columns)
+        # print("Here's df2 columns:")
+        # print(df2.columns)
+        # print("Here's df3 columns:")
+        # print(df3.columns)
+        # print("Here's df4 columns:")
+        # print(df4.columns)
+        # print("Here's df5 columns:")
+        # print(df5.columns)
+
+        # Cast year columns to integers
+        # df1.columns = [int(i) if i.isdigit() else i for i in df1.columns]
+        # df2.columns = [int(i) if i.isdigit() else i for i in df2.columns]
+        df3.columns = [int(i) if i.isdigit() else i for i in df3.columns]
+        df4.columns = [int(i) if i.isdigit() else i for i in df4.columns]
+
+        # Drop 'Country Code' column from each dataframe
+        df1.drop(['Country Code'], axis=1, inplace=True)
+        df2.drop(['Country Code'], axis=1, inplace=True)
+        df3.drop(['Country Code'], axis=1, inplace=True)
+        df4.drop(['Country Code'], axis=1, inplace=True)
+
+        # Set multi-index for each dataframe
+        df1.set_index(['Country', 'Data Source', 'Data Measure'], inplace=True)
+        df2.set_index(['Country', 'Data Source', 'Data Measure'], inplace=True)
+        df3.set_index(['Country', 'Data Source', 'Data Measure'], inplace=True)
+        df4.set_index(['Country', 'Data Source', 'Data Measure'], inplace=True)
+
+        # Combine dataframes
+        df6 = df1.combine_first(df2).combine_first(df3).combine_first(df4).reset_index()
+
+        # Merge df6 with df5 on 'Country'
+        df6 = pd.merge(df6, df5[['PowerBI Name', 'Language']], how='left', left_on='Country', right_on='PowerBI Name')
+
+        # Drop the 'PowerBI Name' column, as it's not required anymore
+        df6.drop(['PowerBI Name'], axis=1, inplace=True)
+
+        # If you want to rename 'Language' column to 'Country Language', you can do
+        # df6.rename(columns={'Language': 'Country Language'}, inplace=True)
+
+        # Reorder the columns to place 'Language' between 'Data Measure' and '1960'
+        cols = list(df6.columns)
+        cols.insert(cols.index(1960), cols.pop(cols.index('Language')))
+        df6 = df6[cols]
+
+        file_name = 'DataSource/' + 'mega_by_country' + '.xlsx'
+        with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+            df6.to_excel(writer, index=True, sheet_name='Sheet1')
+
+        # Group df6 by 'Language', 'Data Source' and 'Data Measure' and sum the values
+        grouped_df6 = df6.groupby(['Language', 'Data Source', 'Data Measure']).sum().reset_index()
+
+        print('Final df columns:')
+        print(grouped_df6.columns)
+        print("Here's the final df:")
+        print(grouped_df6)
+
+
+        file_name = 'DataSource/' + 'mega_by_lang' + '.xlsx'
+        with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+            grouped_df6.to_excel(writer, index=True, sheet_name='Sheet1')
+
+        return grouped_df6
