@@ -23,26 +23,26 @@ class Data:
         self.wb_nom_full = self.group_by_language('wb', 'nom')
 
         # Generate mega file, which contains all IMF, WB, PPP, and Nominal data
-        self.mega = self.create_mega()
+        self.mega = self.create_mega2()
 
         # Dictionary that will hold per language summary statistics, categorized by [year][data source][data measure]
-        # self.gdp_dict = {}
-        # for i in range(1960, 2029):
-        #     self.gdp_dict[i] = {
-        #         "wb": {
-        #             "ppp": None,
-        #             "nom": None
-        #         },
-        #         "imf": {
-        #             "ppp": None,
-        #             "nom": None
-        #         }
-        #     }
-        #
-        # self.generate_annual_summary_stats('imf', 'ppp')
-        # self.generate_annual_summary_stats('imf', 'nom')
-        # self.generate_annual_summary_stats('wb', 'ppp')
-        # self.generate_annual_summary_stats('wb', 'nom')
+        self.gdp_dict = {}
+        for i in range(1960, 2029):
+            self.gdp_dict[i] = {
+                "wb": {
+                    "ppp": None,
+                    "nom": None
+                },
+                "imf": {
+                    "ppp": None,
+                    "nom": None
+                }
+            }
+
+        self.generate_annual_summary_stats('imf', 'ppp')
+        self.generate_annual_summary_stats('imf', 'nom')
+        self.generate_annual_summary_stats('wb', 'ppp')
+        self.generate_annual_summary_stats('wb', 'nom')
 
     def import_country_to_lang(self):
         result = pd.read_excel('DataSource/CountryNameLanguageMap.xls', sheet_name='Sheet1', engine='xlrd')
@@ -294,69 +294,69 @@ class Data:
                 with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
                     culled_df.to_excel(writer, index=True, sheet_name='Sheet1')
 
-    def create_mega(self):
-        # Grab the 4 mod files
-        df1 = self.imf_nom_mod
-        df2 = self.imf_ppp_mod
-        df3 = self.wb_nom_mod
-        df4 = self.wb_ppp_mod
-        df5 = self.country_to_lang
-
-        df1['Country Code'] = ''
-        df2['Country Code'] = ''
-
-        df1['Data Source'] = 'IMF'
-        df2['Data Source'] = 'IMF'
-        df3['Data Source'] = 'World Bank'
-        df4['Data Source'] = 'World Bank'
-
-        df1['Data Measure'] = 'Nominal'
-        df2['Data Measure'] = 'PPP'
-        df3['Data Measure'] = 'Nominal'
-        df4['Data Measure'] = 'PPP'
-
-        # Melt the dataframes to long format
-        df1 = df1.melt(id_vars=['Country', 'Data Source', 'Data Measure'], var_name='Year', value_name='GDP')
-        # print("Here's df1's shape after melt:")
-        # print(df1.shape)
-        df2 = df2.melt(id_vars=['Country', 'Data Source', 'Data Measure'], var_name='Year', value_name='GDP')
-        # print("Here's df2's shape after melt:")
-        # print(df2.shape)
-        df3 = df3.melt(id_vars=['Country', 'Country Code', 'Data Source', 'Data Measure'], var_name='Year',
-                       value_name='GDP')
-        df4 = df4.melt(id_vars=['Country', 'Country Code', 'Data Source', 'Data Measure'], var_name='Year',
-                       value_name='GDP')
-
-        # Concatenate the dataframes
-        df = pd.concat([df1, df2, df3, df4])
-
-        # print("Here's the value counts after concat:")
-        # print(df['Data Source'].value_counts())
-
-        # Aggregate over the groupby to resolve conflicts
-        df = df.groupby(['Country', 'Country Code', 'Data Source', 'Data Measure', 'Year'], as_index=False).agg(
-            {'GDP': 'first'})
-
-        # print("Here's the value counts after groupby:")
-        # print(df['Data Source'].value_counts)
-
-        # Convert 'Year' back to integer data type
-        df['Year'] = df['Year'].astype(int)
-
-        # print("Here's the original df columns:")
-        # print(df.columns)
-        # print("Here's the Country_To_Lang columns:")
-        # print(df5.columns)
-
-        # Add the language data to the mega file
-        df = pd.merge(df, df5[['PowerBI Name', 'Language']], left_on='Country', right_on='PowerBI Name', how='left')
-        df = df.drop('PowerBI Name', axis=1)
-
-        file_name = 'DataSource/' + 'mega' + '.xlsx'
-        with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
-            df.to_excel(writer, index=True, sheet_name='Sheet1')
-
-        return df
+    # def create_mega(self):
+    #     # Grab the 4 mod files
+    #     df1 = self.imf_nom_mod
+    #     df2 = self.imf_ppp_mod
+    #     df3 = self.wb_nom_mod
+    #     df4 = self.wb_ppp_mod
+    #     df5 = self.country_to_lang
+    #
+    #     df1['Country Code'] = ''
+    #     df2['Country Code'] = ''
+    #
+    #     df1['Data Source'] = 'IMF'
+    #     df2['Data Source'] = 'IMF'
+    #     df3['Data Source'] = 'World Bank'
+    #     df4['Data Source'] = 'World Bank'
+    #
+    #     df1['Data Measure'] = 'Nominal'
+    #     df2['Data Measure'] = 'PPP'
+    #     df3['Data Measure'] = 'Nominal'
+    #     df4['Data Measure'] = 'PPP'
+    #
+    #     # Melt the dataframes to long format
+    #     df1 = df1.melt(id_vars=['Country', 'Data Source', 'Data Measure'], var_name='Year', value_name='GDP')
+    #     # print("Here's df1's shape after melt:")
+    #     # print(df1.shape)
+    #     df2 = df2.melt(id_vars=['Country', 'Data Source', 'Data Measure'], var_name='Year', value_name='GDP')
+    #     # print("Here's df2's shape after melt:")
+    #     # print(df2.shape)
+    #     df3 = df3.melt(id_vars=['Country', 'Country Code', 'Data Source', 'Data Measure'], var_name='Year',
+    #                    value_name='GDP')
+    #     df4 = df4.melt(id_vars=['Country', 'Country Code', 'Data Source', 'Data Measure'], var_name='Year',
+    #                    value_name='GDP')
+    #
+    #     # Concatenate the dataframes
+    #     df = pd.concat([df1, df2, df3, df4])
+    #
+    #     # print("Here's the value counts after concat:")
+    #     # print(df['Data Source'].value_counts())
+    #
+    #     # Aggregate over the groupby to resolve conflicts
+    #     df = df.groupby(['Country', 'Country Code', 'Data Source', 'Data Measure', 'Year'], as_index=False).agg(
+    #         {'GDP': 'first'})
+    #
+    #     # print("Here's the value counts after groupby:")
+    #     # print(df['Data Source'].value_counts)
+    #
+    #     # Convert 'Year' back to integer data type
+    #     df['Year'] = df['Year'].astype(int)
+    #
+    #     # print("Here's the original df columns:")
+    #     # print(df.columns)
+    #     # print("Here's the Country_To_Lang columns:")
+    #     # print(df5.columns)
+    #
+    #     # Add the language data to the mega file
+    #     df = pd.merge(df, df5[['PowerBI Name', 'Language']], left_on='Country', right_on='PowerBI Name', how='left')
+    #     df = df.drop('PowerBI Name', axis=1)
+    #
+    #     file_name = 'DataSource/' + 'mega' + '.xlsx'
+    #     with pd.ExcelWriter(file_name, engine='openpyxl') as writer:
+    #         df.to_excel(writer, index=True, sheet_name='Sheet1')
+    #
+    #     return df
 
     def create_mega2(self):
         # Grab the 4 mod files
@@ -417,9 +417,6 @@ class Data:
 
         # Drop the 'PowerBI Name' column, as it's not required anymore
         df6.drop(['PowerBI Name'], axis=1, inplace=True)
-
-        # If you want to rename 'Language' column to 'Country Language', you can do
-        # df6.rename(columns={'Language': 'Country Language'}, inplace=True)
 
         # Reorder the columns to place 'Language' between 'Data Measure' and '1960'
         cols = list(df6.columns)
