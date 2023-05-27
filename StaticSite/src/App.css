@@ -4,68 +4,93 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* This makes the body take up the full height of the viewport */
-    width: 100vw; /* This makes the body take up the full width of the viewport */
+    /*overflow: hidden;*/
+    justify-content: space-between;
+}
+
+.App {
+    /*height: 100%;*/
+    min-height: 100vh;
 }
 
 .HeaderContainer {
     display: flex;
-    height: 100%;
-    width: 100vw; /* This makes the HeaderContainer take up the full width of its parent */
+    width: 100vw;
     align-items: stretch;
+    /*flex: 0 0 auto;*/
+
 }
 
 .HeaderTitle {
-    height: 100%;
+    /*height: 100%;*/
     flex-grow: 1;
     background-color: lightpink;
     white-space: nowrap;
     overflow: hidden;
+    padding: 5px;
     box-sizing: border-box;
 }
 
 .HeaderTitle h1 {
     margin: 0;
-    padding: 5px;
     box-sizing: border-box;
 }
 
 .HeaderLogin {
-    height: 100%;
-    width: 200px;
-    padding: 5px;
+    /*height: 100%;*/
+    width: 300px;
     background-color: lightblue;
-    box-sizing: border-box;
     align-items: stretch;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.BodyContainer {
+    align-items: stretch;
+
 }
 
 .BodyReport {
-    flex-grow: 1;
-    width: 100vw;
+    flex: 1 0 auto;
+    /*flex-grow: 1;*/
+    width: 100%;
+    /*height: 80vh;*/
     background-color: lightgreen;
+    overflow: auto;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.BodyReport iframe {
+    width: 100%;
+    /*height: 100%;*/
 }
 
 .FooterContainer {
     display: flex;
     width: 100vw;
     align-items: stretch;
+    /*flex: 0 0 auto;*/
+    margin-top: auto;
 }
 
 .FooterLeft {
-    height: 100%;
-    padding: 5px;
+    /*height: 100%;*/
     flex-grow: 1;
     background-color: lightsalmon;
+    padding: 5px;
     box-sizing: border-box;
 }
 
 .FooterRight {
-    height: 100%;
-    width: 200px;
-    padding: 5px;
+    /*height: 100%;*/
+    width: 300px;
     background-color: lightyellow;
     text-align: right;
+    padding: 5px;
     box-sizing: border-box;
 }

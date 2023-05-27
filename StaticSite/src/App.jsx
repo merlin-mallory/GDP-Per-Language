@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react"
 import './App.css';
 import HeaderTitle from './components/HeaderTitle'
 import HeaderLogin from "./components/HeaderLogin.jsx";
@@ -6,17 +7,20 @@ import FooterLeft from "./components/FooterLeft.jsx";
 import FooterRight from "./components/FooterRight.jsx";
 
 const App = () => {
+    const [currentPage, setCurrentPage] = useState('report')
 
-  return (
+    return (
     <div className="App">
         <div className="HeaderContainer">
             <HeaderTitle />
             <HeaderLogin />
         </div>
-        <BodyReport />
+        <div className="BodyContainer">
+            <BodyReport currentPage={currentPage}/>
+        </div>
         <div className="FooterContainer">
             <FooterLeft />
-            <FooterRight />
+            <FooterRight setCurrentPage={setCurrentPage}/>
         </div>
     </div>
   )
