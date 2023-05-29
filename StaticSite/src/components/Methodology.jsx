@@ -14,8 +14,7 @@ const Methodology = () => {
             that mostly contain developed countries with strong formal sectors, while the GDP PPP measure will provide a
             more balanced view of developing countries with strong informal sectors.</p>
 
-            <p>If you’re interested in learning more about GDP PPP, then please check out this link:
-            <a href="https://simple.wikipedia.org/wiki/Purchasing_power_parity">https://simple.wikipedia.org/wiki/Purchasing_power_parity</a></p>
+            <p>If you’re interested in learning more about GDP PPP, then please check out this link: <a href="https://simple.wikipedia.org/wiki/Purchasing_power_parity">https://simple.wikipedia.org/wiki/Purchasing_power_parity</a></p>
 
             <h3>How the default country-to-language relationships were generated:</h3>
 
@@ -41,7 +40,7 @@ const Methodology = () => {
             2017 edition</a>
 
 
-        <h3>Current Default Country-To-Language Assignments:</h3>
+        <h3>Default Country-To-Language Assignments (for languages which include multiple countries):</h3>
 
 <ol>
     <li>
@@ -79,8 +78,8 @@ const Methodology = () => {
     <li>
         Arabic
         <ol>
-            <li>In: Saudi Arabia, Egypt, Iraq, Algeria, Qatar, Kuwait, Morocco, Oman, Sudan, Lebanon, Jordan, Tunisia, Bahrain, Libya, Palestine, Syria</li>
-            <li>Out: Israel, UAE, Yemen, Somalia, Mauritania (no data)</li>
+            <li>In: Saudi Arabia, Egypt, Iraq, Algeria, Qatar, Kuwait, Morocco, Oman, Sudan, Lebanon, Jordan, Tunisia, Bahrain, Libya, Syria</li>
+            <li>Out: Israel, UAE, Yemen, Somalia, Mauritania (no data), Palestine (no data)</li>
         </ol>
     </li>
 
@@ -126,7 +125,7 @@ const Methodology = () => {
         Korean
         <ol>
             <li>In: Korea, Republic of</li>
-            <li>Out: North Korea</li>
+            <li>Out: North Korea (no data)</li>
         </ol>
     </li>
 
