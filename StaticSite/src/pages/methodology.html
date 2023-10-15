@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Title</title>
+    <!-- Add CSS file -->
+    <link rel="stylesheet" href="methodstyles.css">
+</head>
+<body>
+    <header>
+        <!-- Header content goes here -->
+    </header>
+
+    <nav>
+        <!-- Navigation content goes here -->
+    </nav>
+
+    <main>
+        <!-- Main content goes here -->
+        <h1>Methodology</h1>
+        <h3>How the data sources and measures were decided:</h3>
+
+        This project’s data is scraped from the World Bank and IMF. This project will examine both nominal GDP (in
+        current US dollars) and GDP PPP (in current international dollars). In general, the nominal GDP measure is
+        better for comparing similar developed entities, and the GDP PPP measure is better for comparing dissimilar
+        developed entities. However it is important to keep in mind that many languages will contain collections of both
+        developed and developing countries. However, in general, the nominal GDP measure will tend to favor languages
+        that mostly contain developed countries with strong formal sectors, while the GDP PPP measure will provide a
+        more balanced view of developing countries with strong informal sectors.
+
+        If you’re interested in learning more about GDP PPP, then please check out this link:
+        https://simple.wikipedia.org/wiki/Purchasing_power_parity
+
+        <h3>How the default country-to-language relationships were generated:</h3>
+
+        There are several ways to approximate the economic value of a language. This project analyzes the language
+        demographics of each country on Wikipedia. If the country’s language demographics cannot be found on Wikipedia,
+        then that country’s GDP will be assigned to the “Other” language group.
+
+        However, if the country’s language demographics can be found, and if greater than 50% of a country's native
+        population are L1 (native) speakers of a single language, then that country’s entire GDP is assigned to the
+        largest language. If no single language reaches the 50% mark for inclusion, then that country's entire GDP is
+        assigned to the "Other" category. This does not account for the impact of L2 speakers.
+
+        I grouped all dialects together, even though some are mutually unintelligible. This is especially notable for
+        Chinese and Arabic. However it's worth noting that even if I broke off Hong Kong and assigned it to Cantonese,
+        it would still not be big enough to make the top 20 list. The same goes for Catalonia, and ex-Yugoslavia, and
+        all the other Chinese/Arabic dialects.
+
+        Special exceptions were made to manually assign Singapore to English, Indonesia to Indo-Malay, Malaysia to
+        Indo-Malay, based upon community feedback of previous editions of this report. Here are some links to previous
+        editions of this report, which were posted on Reddit:
+
+        https://old.reddit.com/r/languagelearning/comments/rs241i/the_20_languages_that_produce_82_of_the_worlds/ (2021
+        edition)
+
+        https://old.reddit.com/r/languagelearning/comments/9i72xd/the_20_languages_that_produce_86_of_the_worlds/ (2018
+        edition)
+
+        https://old.reddit.com/r/languagelearning/comments/6h7frz/just_20_languages_produce_about_80_of_the_worlds/
+        (2017 edition)
+
+        <h3>Current Default Country-To-Language Assignments:</h3>
+
+        English (In: USA, UK, Canada, Australia, Ireland, New Zealand, Singapore, Jamaica, (Bahamas, The), Trinidad and
+        Tobago, Barbados, Grenada, Guyana, Antigua and Barbuda, Belize) (Out: Puerto Rico, Hong Kong, Philippines, South
+        Africa, Nigeria, Ghana, Zimbabwe, Uganda, Zambia, Botswana, Namibia, Kenya, Sierra Leone, Liberia)
+
+        Chinese (In: (China, People’s Republic of), (Taiwan Province of China), (Hong Kong SAR), (Macau SAR))(Out:
+        Singapore)
+
+        Spanish (In: Mexico, Spain, Argentina, Colombia, Chile, Peru, Venezuela, Ecuador, Dominican Republic, Guatemala,
+        Panama, Paraguay, Costa Rica, Bolivia, Uruguay, El Salvador, Honduras, Nicaragua, Puerto Rico) (Out: USA,
+        Equatorial Guinea, Cuba no data)
+
+        German (In: Germany, Austria, Switzerland) (Out: Belgium, Luxembourg)
+
+        Arabic (In: Saudi Arabia, Egypt, Iraq, Algeria, Qatar, Kuwait, Morocco, Oman, Sudan, Lebanon, Jordan, Tunisia,
+        Bahrain, Libya, (-Palestine), Syria) (Out: Israel, UAE, Yemen, Somalia, Mauritania no data)
+
+        Russian (In: (Russian Federation), Belarus) (Out: Latvia, Estonia, Ukraine, Kazakhstan)
+
+        Malay-Indonesian (In: Indonesia, Malaysia)
+
+        Portuguese (In: Brazil, Portugal, Angola, Mozambique, Cabo Verde)
+
+        French (In: France, Mauritius, Benin, (Congo, Dem. Rep. of the), (Congo, Republic of), Cameroon, Togo) (Out:
+        Canada, Belgium, Switzerland, Gabon, Lebanon, Algeria, Luxembourg, Cote d'Ivoire (no data))
+
+        Italian (In: Italy) (Out: Libya, Somalia, Albania, Switzerland)
+
+        Korean (In: (Korea, Republic of), (-North Korea))
+
+        Persian: (In: Iran, Afghanistan)
+
+        Dutch: (In: Netherlands, Belgium, Suriname)
+    </main>
+    <main>
+
+
+    </main>
+
+    <footer>
+        <!-- Footer content goes here -->
+    </footer>
+</body>
+</html>

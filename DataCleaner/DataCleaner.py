@@ -95,7 +95,7 @@ class Data:
             df.columns = df.columns.str.replace(r'\.0$', '', regex=True)
 
             # Delete indicator rows
-            deleting_df = pd.read_excel('DataSource/CountryNameFiles\WB_delete_codes.xlsx', sheet_name='Sheet1',
+            deleting_df = pd.read_excel('DataSource/CountryNameFiles/WB_delete_codes.xlsx', sheet_name='Sheet1',
                                         engine='openpyxl')
 
             # print("df before delete:")
